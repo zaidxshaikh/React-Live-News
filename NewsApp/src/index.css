@@ -50,10 +50,17 @@
   --gradient-3: linear-gradient(135deg, #f5f5fa 0%, #e8e8f0 100%);
 }
 
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 html {
@@ -68,6 +75,8 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  padding-env: safe-area-inset-top safe-area-inset-right safe-area-inset-bottom safe-area-inset-left;
 }
 
 body::before {
@@ -293,6 +302,7 @@ a {
   padding: 0 clamp(16px, 4vw, 48px);
   overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .category-nav::-webkit-scrollbar {
@@ -438,7 +448,7 @@ a {
 /* ============ NEWS GRID ============ */
 .news-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr));
   gap: 24px;
   padding-bottom: 48px;
 }
@@ -787,6 +797,8 @@ a {
 @media (max-width: 1024px) {
   .news-card--featured {
     grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
   }
   .news-card--featured .news-card__image-wrapper {
     min-height: 240px;
@@ -796,7 +808,7 @@ a {
     grid-template-columns: repeat(2, 1fr);
   }
   .news-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   }
 }
 
@@ -829,6 +841,17 @@ a {
     display: flex;
   }
 
+  .navbar__theme-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .navbar__mobile-toggle {
+    width: 36px;
+    height: 36px;
+  }
+
   .category-nav {
     padding: 0 12px;
   }
@@ -842,6 +865,10 @@ a {
     font-size: 0.9rem;
   }
 
+  .main-content {
+    padding-top: calc(var(--nav-height) + 48px);
+  }
+
   .container {
     padding: 0 16px;
   }
@@ -849,6 +876,14 @@ a {
   .news-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  .news-card:hover {
+    transform: none;
+  }
+
+  .news-card__image {
+    height: auto;
   }
 
   .page-header {
@@ -862,6 +897,7 @@ a {
 
   .page-header__subtitle {
     font-size: 0.88rem;
+    padding: 0 8px;
   }
 
   .page-header__stats {
@@ -874,6 +910,11 @@ a {
 
   .news-card__title {
     font-size: 1rem;
+  }
+
+  .news-card--featured {
+    display: flex;
+    flex-direction: column;
   }
 
   .news-card--featured .news-card__title {
@@ -895,11 +936,16 @@ a {
 
   .trending__tags {
     gap: 6px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .trending__tag {
     padding: 5px 10px;
     font-size: 0.75rem;
+    flex-shrink: 0;
   }
 
   .active-filter {
@@ -932,16 +978,25 @@ a {
     padding: 12px;
   }
 
+  .ai-summary__meta {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ai-summary__points li {
+    font-size: 0.74rem;
+  }
+
   .back-to-top {
-    bottom: 20px;
-    right: 20px;
+    bottom: 80px;
+    right: 16px;
     width: 42px;
     height: 42px;
   }
 
   .chatbot-fab {
-    right: 20px;
-    bottom: 20px;
+    right: 16px;
+    bottom: 16px;
     width: 50px;
     height: 50px;
     font-size: 1.3rem;
@@ -950,7 +1005,7 @@ a {
   .chatbot {
     right: 8px;
     left: 8px;
-    bottom: 80px;
+    bottom: 76px;
     width: auto;
     max-height: 70vh;
     border-radius: var(--radius-lg);
@@ -959,11 +1014,13 @@ a {
   .chatbot__messages {
     min-height: 200px;
     max-height: 280px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .footer {
     padding: 28px 0;
     margin-top: 32px;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
   }
 
   .footer__text {
@@ -980,6 +1037,10 @@ a {
 
   .no-results__title {
     font-size: 1.2rem;
+  }
+
+  .spinner-container {
+    padding: 40px 0;
   }
 }
 
@@ -1123,8 +1184,8 @@ a {
   }
 
   .back-to-top {
-    bottom: 12px;
-    right: 68px;
+    bottom: 76px;
+    right: 12px;
     width: 38px;
     height: 38px;
     font-size: 1rem;
@@ -1137,30 +1198,287 @@ a {
   .mobile-menu__link {
     padding: 12px 14px;
     font-size: 0.92rem;
+    min-height: 44px;
+  }
+
+  .news-card__source {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+
+  .news-card__time-badge {
+    font-size: 0.62rem;
+    padding: 3px 8px;
+  }
+
+  .news-card__read-more {
+    font-size: 0.72rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .loading-bar {
+    height: 2px;
   }
 }
 
 /* ============ RESPONSIVE - VERY SMALL ============ */
 @media (max-width: 360px) {
+  .navbar {
+    padding: 0 12px;
+    gap: 4px;
+  }
+
+  .navbar__brand {
+    font-size: 0.95rem;
+    gap: 6px;
+  }
+
+  .navbar__brand-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+  }
+
   .navbar__brand-dot {
     font-size: 0.85rem;
+  }
+
+  .navbar__brand-dot::after {
+    width: 6px;
+    height: 6px;
+  }
+
+  .navbar__theme-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .navbar__mobile-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
   }
 
   .page-header__title {
     font-size: 1.3rem;
   }
 
+  .page-header__subtitle {
+    font-size: 0.78rem;
+  }
+
+  .page-header__stat-value {
+    font-size: 1rem;
+  }
+
+  .page-header__stat-label {
+    font-size: 0.65rem;
+  }
+
   .news-card__image-wrapper {
     aspect-ratio: 16 / 9;
   }
 
+  .news-card__body {
+    padding: 12px;
+  }
+
+  .news-card__title {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+
+  .news-card__description {
+    font-size: 0.76rem;
+    margin-bottom: 10px;
+  }
+
+  .news-card--featured .news-card__body {
+    padding: 12px;
+  }
+
+  .news-card--featured .news-card__title {
+    font-size: 1rem;
+  }
+
+  .news-card--featured .news-card__image-wrapper {
+    min-height: 160px;
+  }
+
+  .category-nav {
+    padding: 0 8px;
+  }
+
   .category-nav__link {
-    padding: 5px 10px;
-    font-size: 0.72rem;
-    gap: 4px;
+    padding: 5px 8px;
+    font-size: 0.7rem;
+    gap: 3px;
   }
 
   .category-nav__icon {
+    font-size: 0.8rem;
+  }
+
+  .trending {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .trending__header {
+    margin-bottom: 10px;
+  }
+
+  .trending__title {
+    font-size: 0.85rem;
+  }
+
+  .trending__tag {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .also-read {
+    padding: 14px;
+    margin: 24px 0;
+    border-radius: var(--radius-lg);
+  }
+
+  .also-read__header {
+    margin-bottom: 14px;
+  }
+
+  .also-read__title {
+    font-size: 0.95rem;
+  }
+
+  .also-read__item {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .also-read__item-img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .also-read__item-title {
+    font-size: 0.76rem;
+  }
+
+  .chatbot-fab {
+    right: 10px;
+    bottom: 10px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
+  .chatbot {
+    right: 4px;
+    left: 4px;
+    bottom: 64px;
+    max-height: 78vh;
+    border-radius: var(--radius-md);
+  }
+
+  .chatbot__header {
+    padding: 10px 12px;
+  }
+
+  .chatbot__avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+  }
+
+  .chatbot__name {
+    font-size: 0.8rem;
+  }
+
+  .chatbot__close {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .chatbot__messages {
+    padding: 10px;
+    gap: 10px;
+    min-height: 160px;
+    max-height: 240px;
+  }
+
+  .chatbot__msg-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 0.65rem;
+  }
+
+  .chatbot__msg-bubble {
+    padding: 7px 10px;
+    font-size: 0.74rem;
+  }
+
+  .chatbot__suggestions {
+    padding: 0 10px 8px;
+    gap: 4px;
+  }
+
+  .chatbot__suggestion {
+    font-size: 0.62rem;
+    padding: 3px 8px;
+  }
+
+  .chatbot__input-area {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .chatbot__input {
+    height: 34px;
+    font-size: 0.74rem;
+    padding: 0 12px;
+  }
+
+  .chatbot__send {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+
+  .back-to-top {
+    bottom: 64px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+
+  .footer {
+    padding: 20px 0;
+    margin-top: 24px;
+  }
+
+  .footer__text {
+    font-size: 0.72rem;
+  }
+
+  .no-results {
+    padding: 36px 0;
+  }
+
+  .no-results__icon {
+    font-size: 2rem;
+  }
+
+  .no-results__title {
+    font-size: 1rem;
+  }
+
+  .no-results__text {
     font-size: 0.8rem;
   }
 }
@@ -1474,7 +1792,7 @@ a {
 
 .also-read__list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 16px;
 }
 
