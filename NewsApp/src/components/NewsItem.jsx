@@ -1,4 +1,5 @@
 import React from "react";
+import AiSummary from "./AiSummary";
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1504711434969-e33886168d6c?w=600&q=80";
 
@@ -26,13 +27,13 @@ const getInitials = (name) => {
 
 const NewsItem = ({ title, description, imageUrl, date, author, url, source, featured }) => {
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`news-card ${featured ? "news-card--featured" : ""}`}
-    >
-      <div className="news-card__image-wrapper">
+    <div className={`news-card ${featured ? "news-card--featured" : ""}`}>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="news-card__image-wrapper"
+      >
         <img
           className="news-card__image"
           src={imageUrl || DEFAULT_IMAGE}
@@ -44,13 +45,17 @@ const NewsItem = ({ title, description, imageUrl, date, author, url, source, fea
         />
         {source && <span className="news-card__source">{source}</span>}
         {date && <span className="news-card__time-badge">{getTimeAgo(date)}</span>}
-      </div>
+      </a>
 
       <div className="news-card__body">
-        <h3 className="news-card__title">{title || "Untitled Article"}</h3>
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          <h3 className="news-card__title">{title || "Untitled Article"}</h3>
+        </a>
         {description && (
           <p className="news-card__description">{description}</p>
         )}
+
+        <AiSummary title={title} description={description} />
 
         <div className="news-card__footer">
           <div className="news-card__author">
@@ -61,12 +66,17 @@ const NewsItem = ({ title, description, imageUrl, date, author, url, source, fea
               {author || "Unknown Author"}
             </span>
           </div>
-          <span className="news-card__read-more">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="news-card__read-more"
+          >
             Read <span className="news-card__read-more-arrow">{"\u2192"}</span>
-          </span>
+          </a>
         </div>
       </div>
-    </a>
+    </div>
   );
 };
 

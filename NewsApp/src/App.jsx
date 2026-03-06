@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import NavBar from "./components/NavBar";
 import CategoryNav from "./components/CategoryNav";
 import News from "./components/News";
+import AiChatbot from "./components/AiChatbot";
 import BackToTop from "./components/BackToTop";
 import Footer from "./components/Footer";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -27,6 +28,7 @@ const App = () => {
     return localStorage.getItem("pulse-theme") || "dark";
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [allArticles, setAllArticles] = useState([]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -66,6 +68,7 @@ const App = () => {
                   category={cat.key}
                   apiKey={apiKey}
                   searchQuery={searchQuery}
+                  onArticlesLoaded={setAllArticles}
                 />
               }
             />
@@ -75,6 +78,7 @@ const App = () => {
 
       <Footer />
       <BackToTop />
+      <AiChatbot articles={allArticles} />
     </Router>
   );
 };

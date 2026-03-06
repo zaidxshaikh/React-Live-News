@@ -1,19 +1,24 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
+import TrendingTopics from "./TrendingTopics";
+import PeopleAlsoRead from "./PeopleAlsoRead";
 import InfiniteScroll from "react-infinite-scroll-component";
 import demoArticles from "../data/demoNews";
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery }) => {
+const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery, onArticlesLoaded }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const [error, setError] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
+  const [localSearch, setLocalSearch] = useState("");
   const pageRef = useRef(1);
+
+  const activeSearch = searchQuery || localSearch;
 
   const loadDemoData = useCallback(() => {
     const data = demoArticles[category] || demoArticles.general;
@@ -71,9 +76,14 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery })
   }, [country, category, apiKey, pageSize, setProgress, loadDemoData]);
 
   useEffect(() => {
+    if (onArticlesLoaded) onArticlesLoaded(articles);
+  }, [articles, onArticlesLoaded]);
+
+  useEffect(() => {
     document.title = `${capitalize(category)} - PulseNews`;
     pageRef.current = 1;
     setPage(1);
+    setLocalSearch("");
     fetchNews(1, false);
   }, [category, fetchNews]);
 
@@ -85,11 +95,16 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery })
     fetchNews(nextPage, true);
   };
 
-  const filtered = searchQuery
+  const handleTopicClick = (topic) => {
+    setLocalSearch(topic);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const filtered = activeSearch
     ? articles.filter(
         (a) =>
-          (a.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (a.description || "").toLowerCase().includes(searchQuery.toLowerCase())
+          (a.title || "").toLowerCase().includes(activeSearch.toLowerCase()) ||
+          (a.description || "").toLowerCase().includes(activeSearch.toLowerCase())
       )
     : articles;
 
@@ -128,6 +143,19 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery })
         )}
       </div>
 
+      {!loading && articles.length > 0 && (
+        <TrendingTopics articles={articles} onTopicClick={handleTopicClick} />
+      )}
+
+      {localSearch && (
+        <div className="active-filter">
+          <span>Filtered by: <strong>{localSearch}</strong></span>
+          <button className="active-filter__clear" onClick={() => setLocalSearch("")}>
+            {"\u2715"} Clear
+          </button>
+        </div>
+      )}
+
       {loading && <Spinner />}
 
       {error && !loading && (
@@ -145,41 +173,47 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery })
           <div className="no-results__icon">{"\u{1F50D}"}</div>
           <h3 className="no-results__title">No results found</h3>
           <p className="no-results__text">
-            {searchQuery
-              ? `No articles match "${searchQuery}"`
+            {activeSearch
+              ? `No articles match "${activeSearch}"`
               : "No articles available right now"}
           </p>
         </div>
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <InfiniteScroll
-          dataLength={articles.length}
-          next={fetchMoreData}
-          hasMore={!isDemo && articles.length < totalResults}
-          loader={<Spinner />}
-        >
-          <div className="news-grid">
-            {filtered.map((article, index) => (
-              <div
-                key={article.url + index}
-                className="animate-in"
-                style={{ animationDelay: `${Math.min(index * 0.05, 0.5)}s` }}
-              >
-                <NewsItem
-                  title={article.title}
-                  description={article.description}
-                  imageUrl={article.urlToImage}
-                  date={article.publishedAt}
-                  url={article.url}
-                  author={article.author}
-                  source={article.source?.name}
-                  featured={index === 0}
-                />
-              </div>
-            ))}
-          </div>
-        </InfiniteScroll>
+        <>
+          <InfiniteScroll
+            dataLength={articles.length}
+            next={fetchMoreData}
+            hasMore={!isDemo && articles.length < totalResults}
+            loader={<Spinner />}
+          >
+            <div className="news-grid">
+              {filtered.map((article, index) => (
+                <div
+                  key={article.url + index}
+                  className="animate-in"
+                  style={{ animationDelay: `${Math.min(index * 0.05, 0.5)}s` }}
+                >
+                  <NewsItem
+                    title={article.title}
+                    description={article.description}
+                    imageUrl={article.urlToImage}
+                    date={article.publishedAt}
+                    url={article.url}
+                    author={article.author}
+                    source={article.source?.name}
+                    featured={index === 0}
+                  />
+                </div>
+              ))}
+            </div>
+          </InfiniteScroll>
+
+          {articles.length > 2 && (
+            <PeopleAlsoRead articles={articles} currentIndex={0} />
+          )}
+        </>
       )}
     </div>
   );
