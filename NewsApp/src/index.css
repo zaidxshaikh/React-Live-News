@@ -251,6 +251,7 @@ a {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .navbar__theme-toggle {
