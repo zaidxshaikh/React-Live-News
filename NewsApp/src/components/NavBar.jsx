@@ -1,70 +1,79 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const NavBar = () => {
+const NavBar = ({ theme, toggleTheme, searchQuery, setSearchQuery, categories }) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div>
-      <nav className="navbar fixed-top navbar-expand-lg bg-dark navbar-dark ">
-        <div className="container-fluid">
-          <Link className="navbar-brand" to="/">
-            Monkey's News
-          </Link>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <Link className="nav-link " aria-current="page" to="/">
-                  Home
-                </Link>
-              </li>
+    <>
+      <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
+        <Link className="navbar__brand" to="/">
+          <span className="navbar__brand-icon">P</span>
+          <span className="navbar__brand-dot">PulseNews</span>
+        </Link>
 
-              <li className="nav-item">
-                <Link className="nav-link" to="/business">
-                  Business
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link className="nav-link" to="/entertainment">
-                  Entertainment
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link className="nav-link" to="/health">
-                  Health
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/science">
-                  Science
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/sports">
-                  Sports
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/technology">
-                  Technology
-                </Link>
-              </li>
-            </ul>
+        <div className="navbar__center">
+          <div className="navbar__search">
+            <span className="navbar__search-icon">{"\u{1F50D}"}</span>
+            <input
+              className="navbar__search-input"
+              type="text"
+              placeholder="Search headlines..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
         </div>
+
+        <div className="navbar__actions">
+          <button
+            className="navbar__theme-toggle"
+            onClick={toggleTheme}
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          >
+            {theme === "dark" ? "\u{2600}\u{FE0F}" : "\u{1F319}"}
+          </button>
+          <button
+            className="navbar__mobile-toggle"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? "\u{2715}" : "\u{2630}"}
+          </button>
+        </div>
       </nav>
-    </div>
+
+      <div className={`mobile-menu ${mobileOpen ? "open" : ""}`}>
+        <div className="mobile-menu__search">
+          <input
+            type="text"
+            placeholder="Search headlines..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <ul className="mobile-menu__links">
+          {categories.map((cat) => (
+            <li key={cat.key}>
+              <Link
+                className="mobile-menu__link"
+                to={cat.key === "general" ? "/" : `/${cat.key}`}
+                onClick={() => setMobileOpen(false)}
+              >
+                <span className="mobile-menu__link-icon">{cat.icon}</span>
+                {cat.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 };
 
