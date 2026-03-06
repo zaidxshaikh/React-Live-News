@@ -80,7 +80,7 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery, o
   }, [articles, onArticlesLoaded]);
 
   useEffect(() => {
-    document.title = `${capitalize(category)} - PulseNews`;
+    document.title = `${capitalize(category)} - zaidxshaikh News`;
     pageRef.current = 1;
     setPage(1);
     setLocalSearch("");

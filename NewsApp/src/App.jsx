@@ -25,14 +25,14 @@ const App = () => {
 
   const [progress, setProgress] = useState(0);
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("pulse-theme") || "dark";
+    return localStorage.getItem("zaidxshaikh-theme") || "dark";
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [allArticles, setAllArticles] = useState([]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("pulse-theme", theme);
+    localStorage.setItem("zaidxshaikh-theme", theme);
   }, [theme]);
 
   const toggleTheme = useCallback(() => {
