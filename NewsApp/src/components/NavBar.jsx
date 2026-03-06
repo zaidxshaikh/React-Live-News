@@ -15,8 +15,8 @@ const NavBar = ({ theme, toggleTheme, searchQuery, setSearchQuery, categories })
     <>
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <Link className="navbar__brand" to="/">
-          <span className="navbar__brand-icon">P</span>
-          <span className="navbar__brand-dot">PulseNews</span>
+          <span className="navbar__brand-icon">Z</span>
+          <span className="navbar__brand-dot">zaidxshaikh News</span>
         </Link>
 
         <div className="navbar__center">

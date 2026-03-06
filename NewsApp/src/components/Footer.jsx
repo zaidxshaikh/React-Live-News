@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="container">
         <p className="footer__text">
           Built with React &middot; Powered by NewsAPI &middot;{" "}
-          <span className="footer__brand">PulseNews</span> &copy;{" "}
+          <span className="footer__brand">zaidxshaikh News</span> &copy;{" "}
           {new Date().getFullYear()}
         </p>
       </div>

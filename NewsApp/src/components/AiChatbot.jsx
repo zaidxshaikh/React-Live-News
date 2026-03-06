@@ -4,7 +4,7 @@ const generateResponse = (query, articles) => {
   const q = query.toLowerCase().trim();
 
   if (q.includes("hello") || q.includes("hi") || q.includes("hey")) {
-    return "Hey! I'm PulseAI, your news assistant. Ask me about today's headlines, trending topics, or any news category. Try: \"What's trending?\" or \"Summarize the top story\"";
+    return "Hey! I'm zaidxshaikh AI, your news assistant. Ask me about today's headlines, trending topics, or any news category. Try: \"What's trending?\" or \"Summarize the top story\"";
   }
 
   if (q.includes("trending") || q.includes("popular") || q.includes("hot")) {
@@ -67,7 +67,7 @@ const AiChatbot = ({ articles }) => {
   const [messages, setMessages] = useState([
     {
       role: "ai",
-      text: "Hi! I'm PulseAI, your smart news assistant. Ask me about headlines, trends, or any topic in the news!",
+      text: "Hi! I'm zaidxshaikh AI, your smart news assistant. Ask me about headlines, trends, or any topic in the news!",
     },
   ]);
   const [input, setInput] = useState("");
@@ -121,7 +121,7 @@ const AiChatbot = ({ articles }) => {
             <div className="chatbot__header-info">
               <div className="chatbot__avatar">{"\u{1F916}"}</div>
               <div>
-                <h4 className="chatbot__name">PulseAI</h4>
+                <h4 className="chatbot__name">zaidxshaikh AI</h4>
                 <span className="chatbot__status">
                   <span className="chatbot__status-dot"></span>
                   Online
