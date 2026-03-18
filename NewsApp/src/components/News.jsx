@@ -3,6 +3,7 @@ import NewsItem from "./NewsItem";
 import Spinner from "./Spinner";
 import TrendingTopics from "./TrendingTopics";
 import PeopleAlsoRead from "./PeopleAlsoRead";
+import SourceFilter from "./SourceFilter";
 import InfiniteScroll from "react-infinite-scroll-component";
 import demoArticles from "../data/demoNews";
 
@@ -16,6 +17,7 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery, o
   const [error, setError] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
+  const [activeSource, setActiveSource] = useState("");
   const pageRef = useRef(1);
 
   const activeSearch = searchQuery || localSearch;
@@ -84,8 +86,9 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery, o
     pageRef.current = 1;
     setPage(1);
     setLocalSearch("");
+    setActiveSource("");
     fetchNews(1, false);
-  }, [category, fetchNews]);
+  }, [category, country, fetchNews]);
 
   const fetchMoreData = () => {
     if (isDemo) return;
@@ -97,16 +100,26 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery, o
 
   const handleTopicClick = (topic) => {
     setLocalSearch(topic);
+    setActiveSource("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const filtered = activeSearch
+  const handleSourceFilter = (source) => {
+    setActiveSource(source);
+    setLocalSearch("");
+  };
+
+  let filtered = activeSearch
     ? articles.filter(
         (a) =>
           (a.title || "").toLowerCase().includes(activeSearch.toLowerCase()) ||
           (a.description || "").toLowerCase().includes(activeSearch.toLowerCase())
       )
     : articles;
+
+  if (activeSource) {
+    filtered = filtered.filter((a) => a.source?.name === activeSource);
+  }
 
   return (
     <div className="container">
@@ -144,13 +157,29 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery, o
       </div>
 
       {!loading && articles.length > 0 && (
-        <TrendingTopics articles={articles} onTopicClick={handleTopicClick} />
+        <>
+          <TrendingTopics articles={articles} onTopicClick={handleTopicClick} />
+          <SourceFilter
+            articles={articles}
+            onFilterChange={handleSourceFilter}
+            activeSource={activeSource}
+          />
+        </>
       )}
 
-      {localSearch && (
+      {(localSearch || activeSource) && (
         <div className="active-filter">
-          <span>Filtered by: <strong>{localSearch}</strong></span>
-          <button className="active-filter__clear" onClick={() => setLocalSearch("")}>
+          <span>
+            Filtered by:{" "}
+            <strong>{localSearch || activeSource}</strong>
+          </span>
+          <button
+            className="active-filter__clear"
+            onClick={() => {
+              setLocalSearch("");
+              setActiveSource("");
+            }}
+          >
             {"\u2715"} Clear
           </button>
         </div>
@@ -175,6 +204,8 @@ const News = ({ setProgress, pageSize, country, category, apiKey, searchQuery, o
           <p className="no-results__text">
             {activeSearch
               ? `No articles match "${activeSearch}"`
+              : activeSource
+              ? `No articles from "${activeSource}"`
               : "No articles available right now"}
           </p>
         </div>
