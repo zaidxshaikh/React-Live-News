@@ -6,6 +6,11 @@ import News from "./components/News";
 import AiChatbot from "./components/AiChatbot";
 import BackToTop from "./components/BackToTop";
 import Footer from "./components/Footer";
+import Bookmarks from "./components/Bookmarks";
+import History from "./components/History";
+import AnalyticsDashboard from "./components/AnalyticsDashboard";
+import NewsComparison from "./components/NewsComparison";
+import BreakingTicker from "./components/BreakingTicker";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const categories = [
@@ -20,8 +25,8 @@ const categories = [
 
 const App = () => {
   const pageSize = 12;
-  const country = "us";
   const apiKey = import.meta.env.VITE_NEWS_API;
+  const weatherApiKey = import.meta.env.VITE_WEATHER_API;
 
   const [progress, setProgress] = useState(0);
   const [theme, setTheme] = useState(() => {
@@ -29,11 +34,18 @@ const App = () => {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [allArticles, setAllArticles] = useState([]);
+  const [country, setCountry] = useState(() => {
+    return localStorage.getItem("zaidxshaikh-country") || "us";
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("zaidxshaikh-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem("zaidxshaikh-country", country);
+  }, [country]);
 
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
@@ -51,8 +63,13 @@ const App = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         categories={categories}
+        country={country}
+        onCountryChange={setCountry}
+        articles={allArticles}
+        weatherApiKey={weatherApiKey}
       />
       <CategoryNav categories={categories} />
+      <BreakingTicker articles={allArticles} />
 
       <main className="main-content">
         <Routes>
@@ -73,6 +90,16 @@ const App = () => {
               }
             />
           ))}
+          <Route path="/bookmarks" element={<Bookmarks />} />
+          <Route path="/history" element={<History />} />
+          <Route
+            path="/analytics"
+            element={<AnalyticsDashboard articles={allArticles} />}
+          />
+          <Route
+            path="/compare"
+            element={<NewsComparison articles={allArticles} />}
+          />
         </Routes>
       </main>
 

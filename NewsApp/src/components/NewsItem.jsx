@@ -1,5 +1,8 @@
 import React from "react";
 import AiSummary from "./AiSummary";
+import BookmarkButton from "./BookmarkButton";
+import ShareButton from "./ShareButton";
+import { addToHistory } from "./History";
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1504711434969-e33886168d6c?w=600&q=80";
 
@@ -26,6 +29,12 @@ const getInitials = (name) => {
 };
 
 const NewsItem = ({ title, description, imageUrl, date, author, url, source, featured }) => {
+  const article = { title, description, urlToImage: imageUrl, publishedAt: date, author, url, source: { name: source } };
+
+  const handleReadClick = () => {
+    addToHistory(article);
+  };
+
   return (
     <div className={`news-card ${featured ? "news-card--featured" : ""}`}>
       <a
@@ -33,6 +42,7 @@ const NewsItem = ({ title, description, imageUrl, date, author, url, source, fea
         target="_blank"
         rel="noopener noreferrer"
         className="news-card__image-wrapper"
+        onClick={handleReadClick}
       >
         <img
           className="news-card__image"
@@ -48,7 +58,12 @@ const NewsItem = ({ title, description, imageUrl, date, author, url, source, fea
       </a>
 
       <div className="news-card__body">
-        <a href={url} target="_blank" rel="noopener noreferrer">
+        <div className="news-card__top-actions">
+          <BookmarkButton article={article} />
+          <ShareButton url={url} title={title} />
+        </div>
+
+        <a href={url} target="_blank" rel="noopener noreferrer" onClick={handleReadClick}>
           <h3 className="news-card__title">{title || "Untitled Article"}</h3>
         </a>
         {description && (
@@ -71,6 +86,7 @@ const NewsItem = ({ title, description, imageUrl, date, author, url, source, fea
             target="_blank"
             rel="noopener noreferrer"
             className="news-card__read-more"
+            onClick={handleReadClick}
           >
             Read <span className="news-card__read-more-arrow">{"\u2192"}</span>
           </a>
